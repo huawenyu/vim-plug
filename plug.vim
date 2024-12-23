@@ -660,8 +660,13 @@ function! s:lod_cmd(cmd, bang, l1, l2, args, names)
     let plug = g:plugs[name]
     if has_key(plug, 'setup')
         let cmdSetup = get(plug, 'setup')
+        if cmdSetup[0] == ':'
+            let cmdSetup = cmdSetup[1:]
+        endif
         if exists(':'.. cmdSetup)
             execute cmdSetup
+        else
+            echoerr "$MYVIMRC: User-defined Plug-[".. name .. '].setup=['.. cmdSetup.. '] failed: command-not-exist!'
         endif
     endif
   endfor
