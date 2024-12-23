@@ -654,6 +654,18 @@ endfunction
 function! s:lod_cmd(cmd, bang, l1, l2, args, names)
   call s:lod(a:names, ['ftdetect', 'after/ftdetect', 'plugin', 'after/plugin'])
   call s:dobufread(a:names)
+
+  " Lazy-load: call setup after loaded 
+  for name in a:names
+    let plug = g:plugs[name]
+    if has_key(plug, 'setup')
+        let cmdSetup = get(plug, 'setup')
+        if exists(':'.. cmdSetup)
+            execute cmdSetup
+        endif
+    endif
+  endfor
+
   execute printf('%s%s%s %s', (a:l1 == a:l2 ? '' : (a:l1.','.a:l2)), a:cmd, a:bang, a:args)
 endfunction
 
