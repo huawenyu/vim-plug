@@ -652,6 +652,22 @@ function! s:lod_ft(pat, names)
 endfunction
 
 function! s:lod_cmd(cmd, bang, l1, l2, args, names)
+  " Lazy-load: call config before loaded
+  for name in a:names
+    let plug = g:plugs[name]
+    if has_key(plug, 'config')
+        let cmdConf = get(plug, 'config')
+        if cmdConf[0] == ':'
+            let = cmdConf[1:]
+        endif
+        if exists(':'.. cmdConf)
+            execute cmdConf
+        else
+            echoerr "$MYVIMRC: User-defined Plug-[".. name .. '].config=['.. cmdConf.. '] failed: command-not-exist!'
+        endif
+    endif
+  endfor
+
   call s:lod(a:names, ['ftdetect', 'after/ftdetect', 'plugin', 'after/plugin'])
   call s:dobufread(a:names)
 
